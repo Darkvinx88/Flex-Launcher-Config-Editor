@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Launcher Config Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white min-h-screen p-6">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-4xl font-bold mb-2">Flex Launcher Config Editor</h1>
+                <p class="text-slate-400">Visual configuration editor for Flex Launcher v2.2</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="loadConfig()" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg transition-colors font-semibold">
+                    📁 Load Config
+                </button>
+                <button onclick="downloadConfig()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition-colors font-semibold">
+                    💾 Save Config
+                </button>
+            </div>
+        </div>
+        <input type="file" id="fileInput" accept=".ini" style="display: none;" onchange="handleFileLoad(event)">
+        <div class="flex gap-2 mb-6 overflow-x-auto pb-2" id="tabs">
+            <button onclick="switchTab('general')" class="tab-btn px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white">⚙️ General</button>
+            <button onclick="switchTab('background')" class="tab-btn px-4 py-2 rounded-lg transition-colors bg-slate-700 hover:bg-slate-600 text-slate-300">🎨 Background</button>
+            <button onclick="switchTab('layout')" class="tab-btn px-4 py-2 rounded-lg transition-colors bg-slate-700 hover:bg-slate-600 text-slate-300">📐 Layout</button>
+            <button onclick="switchTab('clock')" class="tab-btn px-4 py-2 rounded-lg transition-colors bg-slate-700 hover:bg-slate-600 text-slate-300">🕐 Clock</button>
+            <button onclick="switchTab('gamepad')" class="tab-btn px-4 py-2 rounded-lg transition-colors bg-slate-700 hover:bg-slate-600 text-slate-300">🎮 Gamepad</button>
+            <button onclick="switchTab('titles')" class="tab-btn px-4 py-2 rounded-lg transition-colors bg-slate-700 hover:bg-slate-600 text-slate-300">📝 Titles</button>
+            <button onclick="switchTab('highlight')" class="tab-btn px-4 py-2 rounded-lg transition-colors bg-slate-700 hover:bg-slate-600 text-slate-300">🌟 Highlight</button>
+            <button onclick="switchTab('scroll')" class="tab-btn px-4 py-2 rounded-lg transition-colors bg-slate-700 hover:bg-slate-600 text-slate-300">↕️ Scroll Indicators</button>
+            <button onclick="switchTab('screensaver')" class="tab-btn px-4 py-2 rounded-lg transition-colors bg-slate-700 hover:bg-slate-600 text-slate-300">💤 Screensaver</button>
+            <button onclick="switchTab('menus')" class="tab-btn px-4 py-2 rounded-lg transition-colors bg-slate-700 hover:bg-slate-600 text-slate-300">📋 Menus</button>
+        </div>
+        <div class="bg-slate-800 rounded-xl p-6 shadow-2xl">
+            <!-- General Tab -->
+            <div id="tab-general" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Default Menu</label>
+                        <input type="text" id="general-defaultMenu" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2" value="Main">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">On Launch</label>
+                        <select id="general-onLaunch" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            <option>Blank</option>
+                            <option>Stay</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">FPS Limit</label>
+                        <input type="number" id="general-fpsLimit" placeholder="No limit" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Application Timeout (s)</label>
+                        <input type="number" id="general-applicationTimeout" value="15" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="general-vsync" checked class="w-5 h-5">
+                        <label>VSync</label>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="general-wrapEntries" class="w-5 h-5">
+                        <label>Wrap Entries</label>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="general-resetOnBack" class="w-5 h-5">
+                        <label>Reset On Back</label>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="general-mouseSelect" class="w-5 h-5">
+                        <label>Mouse Select</label>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="general-inhibitOSScreensaver" checked class="w-5 h-5">
+                        <label>Inhibit OS Screensaver</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Background Tab -->
+            <div id="tab-background" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Mode</label>
+                        <select id="background-mode" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            <option>Color</option>
+                            <option>Image</option>
+                            <option>Slideshow</option>
+                            <option>Video</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Color</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="background-color" value="#000000" class="w-16 h-10 bg-slate-700 border border-slate-600 rounded-lg">
+                            <input type="text" id="background-colorText" value="#000000" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium mb-2">Image Path</label>
+                        <input type="text" id="background-image" placeholder=".\assets\background.png" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium mb-2">Slideshow Directory</label>
+                        <input type="text" id="background-slideshowDirectory" placeholder=".\assets\slideshow" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Slideshow Duration (s)</label>
+                        <input type="number" id="background-slideshowImageDuration" value="30" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Transition Time (s)</label>
+                        <input type="number" id="background-slideshowTransitionTime" value="3" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="background-overlay" class="w-5 h-5">
+                        <label>Overlay</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Overlay Opacity (%)</label>
+                        <input type="number" id="background-overlayOpacity" value="50" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                </div>
+            </div>
+            <!-- Layout Tab -->
+            <div id="tab-layout" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Max Buttons</label>
+                        <input type="number" id="layout-maxButtons" value="4" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Icon Size (px)</label>
+                        <input type="number" id="layout-iconSize" value="256" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Icon Spacing (%)</label>
+                        <input type="number" id="layout-iconSpacing" value="5" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Vertical Center (%)</label>
+                        <input type="number" id="layout-vCenter" value="50" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                </div>
+            </div>
+            <!-- Clock Tab -->
+            <div id="tab-clock" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="clock-enabled" class="w-5 h-5">
+                        <label>Enable Clock</label>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="clock-showDate" class="w-5 h-5">
+                        <label>Show Date</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Alignment</label>
+                        <select id="clock-alignment" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            <option>Left</option>
+                            <option>Center</option>
+                            <option>Right</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Font Size</label>
+                        <input type="number" id="clock-fontSize" value="50" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Font Color</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="clock-fontColor" value="#FFFFFF" class="w-16 h-10 bg-slate-700 border border-slate-600 rounded-lg">
+                            <input type="text" id="clock-fontColorText" value="#FFFFFF" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Margin (%)</label>
+                        <input type="number" id="clock-margin" value="5" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                </div>
+            </div>
+            <!-- Gamepad Tab -->
+            <div id="tab-gamepad" class="tab-content hidden">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="gamepad-enabled" class="w-5 h-5">
+                        <label class="font-medium">Enable Gamepad Support</label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Device Index</label>
+                            <input type="number" id="gamepad-deviceIndex" value="-1" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-600 pt-6">
+                        <h3 class="text-lg font-semibold mb-4">Button Mappings</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button A</label>
+                                <input type="text" id="gamepad-buttonA" value=":select" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button B</label>
+                                <input type="text" id="gamepad-buttonB" value=":back" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button X</label>
+                                <input type="text" id="gamepad-buttonX" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button Y</label>
+                                <input type="text" id="gamepad-buttonY" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button Back</label>
+                                <input type="text" id="gamepad-buttonBack" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button Guide</label>
+                                <input type="text" id="gamepad-buttonGuide" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button Start</label>
+                                <input type="text" id="gamepad-buttonStart" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button Left Stick</label>
+                                <input type="text" id="gamepad-buttonLeftStick" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button Right Stick</label>
+                                <input type="text" id="gamepad-buttonRightStick" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button Left Shoulder</label>
+                                <input type="text" id="gamepad-buttonLeftShoulder" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Button Right Shoulder</label>
+                                <input type="text" id="gamepad-buttonRightShoulder" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">D-Pad Up</label>
+                                <input type="text" id="gamepad-buttonDPadUp" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">D-Pad Down</label>
+                                <input type="text" id="gamepad-buttonDPadDown" value="" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">D-Pad Left</label>
+                                <input type="text" id="gamepad-buttonDPadLeft" value=":left" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">D-Pad Right</label>
+                                <input type="text" id="gamepad-buttonDPadRight" value=":right" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Titles Tab -->
+            <div id="tab-titles" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="titles-enabled" checked class="w-5 h-5">
+                        <label>Enable Titles</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Font</label>
+                        <input type="text" id="titles-font" value=".\assets\fonts\OpenSans-Regular.ttf" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Font Size</label>
+                        <input type="number" id="titles-fontSize" value="36" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Color</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="titles-color" value="#FFFFFF" class="w-16 h-10 bg-slate-700 border border-slate-600 rounded-lg">
+                            <input type="text" id="titles-colorText" value="#FFFFFF" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Opacity (%)</label>
+                        <input type="number" id="titles-opacity" value="100" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="titles-shadows" class="w-5 h-5">
+                        <label>Shadows</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Shadow Color</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="titles-shadowColor" value="#000000" class="w-16 h-10 bg-slate-700 border border-slate-600 rounded-lg">
+                            <input type="text" id="titles-shadowColorText" value="#000000" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Oversize Mode</label>
+                        <select id="titles-oversizeMode" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                            <option>Shrink</option>
+                            <option>Truncate</option>
+                            <option>Wrap</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Padding (px)</label>
+                        <input type="number" id="titles-padding" value="20" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                </div>
+            </div>
+            <!-- Highlight Tab -->
+            <div id="tab-highlight" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="highlight-enabled" checked class="w-5 h-5">
+                        <label>Enable Highlight</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Fill Color</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="highlight-fillColor" value="#FFFFFF" class="w-16 h-10 bg-slate-700 border border-slate-600 rounded-lg">
+                            <input type="text" id="highlight-fillColorText" value="#FFFFFF" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Fill Opacity (%)</label>
+                        <input type="number" id="highlight-fillOpacity" value="25" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Outline Size (px)</label>
+                        <input type="number" id="highlight-outlineSize" value="0" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Outline Color</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="highlight-outlineColor" value="#0000FF" class="w-16 h-10 bg-slate-700 border border-slate-600 rounded-lg">
+                            <input type="text" id="highlight-outlineColorText" value="#0000FF" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Outline Opacity (%)</label>
+                        <input type="number" id="highlight-outlineOpacity" value="100" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Corner Radius (px)</label>
+                        <input type="number" id="highlight-cornerRadius" value="0" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Vertical Padding (px)</label>
+                        <input type="number" id="highlight-vPadding" value="30" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Horizontal Padding (px)</label>
+                        <input type="number" id="highlight-hPadding" value="30" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                </div>
+            </div>
+            <!-- Scroll Indicators Tab -->
+            <div id="tab-scroll" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="scroll-enabled" checked class="w-5 h-5">
+                        <label>Enable Scroll Indicators</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Fill Color</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="scroll-fillColor" value="#FFFFFF" class="w-16 h-10 bg-slate-700 border border-slate-600 rounded-lg">
+                            <input type="text" id="scroll-fillColorText" value="#FFFFFF" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Outline Size (px)</label>
+                        <input type="number" id="scroll-outlineSize" value="0" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Outline Color</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="scroll-outlineColor" value="#000000" class="w-16 h-10 bg-slate-700 border border-slate-600 rounded-lg">
+                            <input type="text" id="scroll-outlineColorText" value="#000000" class="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Opacity (%)</label>
+                        <input type="number" id="scroll-opacity" value="100" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                </div>
+            </div>
+            <!-- Screensaver Tab -->
+            <div id="tab-screensaver" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="screensaver-enabled" class="w-5 h-5">
+                        <label>Enable Screensaver</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Idle Time (s)</label>
+                        <input type="number" id="screensaver-idleTime" value="300" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Intensity (%)</label>
+                        <input type="number" id="screensaver-intensity" value="70" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2">
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="screensaver-pauseSlideshow" checked class="w-5 h-5">
+                        <label>Pause Slideshow</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Menus Tab -->
+            <div id="tab-menus" class="tab-content hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex gap-2 flex-wrap" id="menu-tabs"></div>
+                    <div class="flex gap-2">
+                        <button onclick="addMenu()" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors">
+                            ➕ New Menu
+                        </button>
+                        <button onclick="deleteCurrentMenu()" id="delete-menu-btn" class="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors">
+                            🗑️ Delete Menu
+                        </button>
+                    </div>
+                </div>
+                <div id="menu-entries" class="space-y-4"></div>
+                <button onclick="addMenuEntry()" class="w-full flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 border-2 border-dashed border-slate-500 px-4 py-4 rounded-lg transition-colors mt-4">
+                    ➕ Add Entry
+                </button>
+                <div class="mt-6 p-4 bg-slate-700 rounded-lg">
+                    <h4 class="font-semibold mb-2">Special Commands:</h4>
+                    <ul class="text-sm text-slate-300 space-y-1">
+                        <li><code class="bg-slate-600 px-2 py-1 rounded">:submenu MenuName</code> - Open another menu</li>
+                        <li><code class="bg-slate-600 px-2 py-1 rounded">:shutdown</code> - Shutdown the system</li>
+                        <li><code class="bg-slate-600 px-2 py-1 rounded">:restart</code> - Restart the system</li>
+                        <li><code class="bg-slate-600 px-2 py-1 rounded">:sleep</code> - Put system to sleep</li>
+                        <li><code class="bg-slate-600 px-2 py-1 rounded">:quit</code> - Exit Flex Launcher</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6">
+            <h3 class="text-lg font-semibold mb-2">Asset Organization</h3>
+            <p class="text-slate-300 mb-3">Your Flex Launcher directory should be organized as follows:</p>
+            <div class="bg-slate-900 p-4 rounded-lg font-mono text-sm">
+                <div>📁 Flex Launcher/</div>
+                <div class="ml-4">📄 config.ini</div>
+                <div class="ml-4">📁 assets/</div>
+                <div class="ml-8">📁 fonts/</div>
+                <div class="ml-12">📄 OpenSans-Regular.ttf</div>
+                <div class="ml-12">📄 SourceSansPro-Regular.ttf</div>
+                <div class="ml-8">📁 icons/</div>
+                <div class="ml-12">📄 kodi.png</div>
+                <div class="ml-12">📄 plex.png</div>
+                <div class="ml-12">📄 steam.png</div>
+                <div class="ml-12">📄 system.png</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let menus = {
+            Main: [
+                { name: 'Kodi', icon: '.\\assets\\icons\\kodi.png', command: '"C:\\Program Files\\Kodi\\kodi.exe"' },
+                { name: 'Plex', icon: '.\\assets\\icons\\plex.png', command: '"C:\\Program Files\\Plex\\Plex Media Player\\PlexMediaPlayer.exe"' },
+                { name: 'Steam', icon: '.\\assets\\icons\\steam.png', command: '"C:\\Program Files (x86)\\Steam\\steam.exe" steam://open/bigpicture' },
+                { name: 'System', icon: '.\\assets\\icons\\system.png', command: ':submenu System' }
+            ],
+            System: [
+                { name: 'Shutdown', icon: '.\\assets\\icons\\system.png', command: ':shutdown' },
+                { name: 'Restart', icon: '.\\assets\\icons\\restart.png', command: ':restart' },
+                { name: 'Sleep', icon: '.\\assets\\icons\\sleep.png', command: ':sleep' }
+            ]
+        };
+        let currentMenu = 'Main';
+        function loadConfig() {
+            document.getElementById('fileInput').click();
+        }
+        function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                parseINI(content);
+                alert('Configuration loaded successfully!');
+                // Reset file input
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+        function parseINI(content) {
+            const lines = content.split('\n');
+            let currentSection = '';
+            menus = {};
+            for (let line of lines) {
+                line = line.trim();
+                // Skip comments and empty lines
+                if (line.startsWith('#') || line === '') continue;
+                // Check for section headers
+                if (line.startsWith('[') && line.endsWith(']')) {
+                    currentSection = line.slice(1, -1);
+                    continue;
+                }
+                // Parse key-value pairs
+                const equalIndex = line.indexOf('=');
+                if (equalIndex === -1) continue;
+                const key = line.slice(0, equalIndex).trim();
+                const value = line.slice(equalIndex + 1).trim();
+                // Parse based on section
+                if (currentSection === 'General') {
+                    parseGeneralSection(key, value);
+                } else if (currentSection === 'Background') {
+                    parseBackgroundSection(key, value);
+                } else if (currentSection === 'Layout') {
+                    parseLayoutSection(key, value);
+                } else if (currentSection === 'Clock') {
+                    parseClockSection(key, value);
+                } else if (currentSection === 'Gamepad') {
+                    parseGamepadSection(key, value);
+                } else if (currentSection === 'Titles') {
+                    parseTitlesSection(key, value);
+                } else if (currentSection === 'Highlight') {
+                    parseHighlightSection(key, value);
+                } else if (currentSection === 'Scroll Indicators') {
+                    parseScrollIndicatorsSection(key, value);
+                } else if (currentSection === 'Screensaver') {
+                    parseScreensaverSection(key, value);
+                } else if (currentSection !== 'Hotkeys') {
+                    // This is a menu section
+                    parseMenuEntry(currentSection, key, value);
+                }
+            }
+            // Update UI
+            updateUIFromConfig();
+        }
+        function parseGeneralSection(key, value) {
+            const id = 'general-' + key.charAt(0).toLowerCase() + key.slice(1);
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.type === 'checkbox') {
+                el.checked = value.toLowerCase() === 'true';
+            } else {
+                el.value = value;
+            }
+        }
+        function parseBackgroundSection(key, value) {
+            if (key === 'Mode') {
+                document.getElementById('background-mode').value = value;
+            } else if (key === 'Color') {
+                document.getElementById('background-color').value = value;
+                document.getElementById('background-colorText').value = value;
+            } else if (key === 'Image') {
+                document.getElementById('background-image').value = value;
+            } else if (key === 'SlideshowDirectory') {
+                document.getElementById('background-slideshowDirectory').value = value;
+            } else if (key === 'SlideshowImageDuration') {
+                document.getElementById('background-slideshowImageDuration').value = value;
+            } else if (key === 'SlideshowTransitionTime') {
+                document.getElementById('background-slideshowTransitionTime').value = value;
+            } else if (key === 'Overlay') {
+                document.getElementById('background-overlay').checked = value.toLowerCase() === 'true';
+            } else if (key === 'OverlayOpacity') {
+                document.getElementById('background-overlayOpacity').value = value.replace('%', '');
+            }
+        }
+        function parseLayoutSection(key, value) {
+            if (key === 'MaxButtons') {
+                document.getElementById('layout-maxButtons').value = value;
+            } else if (key === 'IconSize') {
+                document.getElementById('layout-iconSize').value = value;
+            } else if (key === 'IconSpacing') {
+                document.getElementById('layout-iconSpacing').value = value.replace('%', '');
+            } else if (key === 'VCenter') {
+                document.getElementById('layout-vCenter').value = value.replace('%', '');
+            }
+        }
+        function parseClockSection(key, value) {
+            if (key === 'Enabled') {
+                document.getElementById('clock-enabled').checked = value.toLowerCase() === 'true';
+            } else if (key === 'ShowDate') {
+                document.getElementById('clock-showDate').checked = value.toLowerCase() === 'true';
+            } else if (key === 'Alignment') {
+                document.getElementById('clock-alignment').value = value;
+            } else if (key === 'FontSize') {
+                document.getElementById('clock-fontSize').value = value;
+            } else if (key === 'FontColor') {
+                document.getElementById('clock-fontColor').value = value;
+                document.getElementById('clock-fontColorText').value = value;
+            } else if (key === 'Margin') {
+                document.getElementById('clock-margin').value = value.replace('%', '');
+            }
+        }
+        function parseGamepadSection(key, value) {
+            if (key === 'Enabled') {
+                document.getElementById('gamepad-enabled').checked = value.toLowerCase() === 'true';
+            } else if (key === 'DeviceIndex') {
+                document.getElementById('gamepad-deviceIndex').value = value;
+            } else if (key === 'ButtonA') {
+                document.getElementById('gamepad-buttonA').value = value;
+            } else if (key === 'ButtonB') {
+                document.getElementById('gamepad-buttonB').value = value;
+            } else if (key === 'ButtonX') {
+                document.getElementById('gamepad-buttonX').value = value;
+            } else if (key === 'ButtonY') {
+                document.getElementById('gamepad-buttonY').value = value;
+            } else if (key === 'ButtonBack') {
+                document.getElementById('gamepad-buttonBack').value = value;
+            } else if (key === 'ButtonGuide') {
+                document.getElementById('gamepad-buttonGuide').value = value;
+            } else if (key === 'ButtonStart') {
+                document.getElementById('gamepad-buttonStart').value = value;
+            } else if (key === 'ButtonLeftStick') {
+                document.getElementById('gamepad-buttonLeftStick').value = value;
+            } else if (key === 'ButtonRightStick') {
+                document.getElementById('gamepad-buttonRightStick').value = value;
+            } else if (key === 'ButtonLeftShoulder') {
+                document.getElementById('gamepad-buttonLeftShoulder').value = value;
+            } else if (key === 'ButtonRightShoulder') {
+                document.getElementById('gamepad-buttonRightShoulder').value = value;
+            } else if (key === 'ButtonDPadUp') {
+                document.getElementById('gamepad-buttonDPadUp').value = value;
+            } else if (key === 'ButtonDPadDown') {
+                document.getElementById('gamepad-buttonDPadDown').value = value;
+            } else if (key === 'ButtonDPadLeft') {
+                document.getElementById('gamepad-buttonDPadLeft').value = value;
+            } else if (key === 'ButtonDPadRight') {
+                document.getElementById('gamepad-buttonDPadRight').value = value;
+            }
+        }
+        function parseTitlesSection(key, value) {
+            if (key === 'Enabled') {
+                document.getElementById('titles-enabled').checked = value.toLowerCase() === 'true';
+            } else if (key === 'Font') {
+                document.getElementById('titles-font').value = value;
+            } else if (key === 'FontSize') {
+                document.getElementById('titles-fontSize').value = value;
+            } else if (key === 'Color') {
+                document.getElementById('titles-color').value = value;
+                document.getElementById('titles-colorText').value = value;
+            } else if (key === 'Opacity') {
+                document.getElementById('titles-opacity').value = value.replace('%', '');
+            } else if (key === 'Shadows') {
+                document.getElementById('titles-shadows').checked = value.toLowerCase() === 'true';
+            } else if (key === 'ShadowColor') {
+                document.getElementById('titles-shadowColor').value = value;
+                document.getElementById('titles-shadowColorText').value = value;
+            } else if (key === 'OversizeMode') {
+                document.getElementById('titles-oversizeMode').value = value;
+            } else if (key === 'Padding') {
+                document.getElementById('titles-padding').value = value;
+            }
+        }
+        function parseHighlightSection(key, value) {
+            if (key === 'Enabled') {
+                document.getElementById('highlight-enabled').checked = value.toLowerCase() === 'true';
+            } else if (key === 'FillColor') {
+                document.getElementById('highlight-fillColor').value = value;
+                document.getElementById('highlight-fillColorText').value = value;
+            } else if (key === 'FillOpacity') {
+                document.getElementById('highlight-fillOpacity').value = value.replace('%', '');
+            } else if (key === 'OutlineSize') {
+                document.getElementById('highlight-outlineSize').value = value;
+            } else if (key === 'OutlineColor') {
+                document.getElementById('highlight-outlineColor').value = value;
+                document.getElementById('highlight-outlineColorText').value = value;
+            } else if (key === 'OutlineOpacity') {
+                document.getElementById('highlight-outlineOpacity').value = value.replace('%', '');
+            } else if (key === 'CornerRadius') {
+                document.getElementById('highlight-cornerRadius').value = value;
+            } else if (key === 'VPadding') {
+                document.getElementById('highlight-vPadding').value = value;
+            } else if (key === 'HPadding') {
+                document.getElementById('highlight-hPadding').value = value;
+            }
+        }
+        function parseScrollIndicatorsSection(key, value) {
+            if (key === 'Enabled') {
+                document.getElementById('scroll-enabled').checked = value.toLowerCase() === 'true';
+            } else if (key === 'FillColor') {
+                document.getElementById('scroll-fillColor').value = value;
+                document.getElementById('scroll-fillColorText').value = value;
+            } else if (key === 'OutlineSize') {
+                document.getElementById('scroll-outlineSize').value = value;
+            } else if (key === 'OutlineColor') {
+                document.getElementById('scroll-outlineColor').value = value;
+                document.getElementById('scroll-outlineColorText').value = value;
+            } else if (key === 'Opacity') {
+                document.getElementById('scroll-opacity').value = value.replace('%', '');
+            }
+        }
+        function parseScreensaverSection(key, value) {
+            if (key === 'Enabled') {
+                document.getElementById('screensaver-enabled').checked = value.toLowerCase() === 'true';
+            } else if (key === 'IdleTime') {
+                document.getElementById('screensaver-idleTime').value = value;
+            } else if (key === 'Intensity') {
+                document.getElementById('screensaver-intensity').value = value.replace('%', '');
+            } else if (key === 'PauseSlideshow') {
+                document.getElementById('screensaver-pauseSlideshow').checked = value.toLowerCase() === 'true';
+            }
+        }
+        function parseMenuEntry(menuName, key, value) {
+            if (!key.startsWith('Entry')) return;
+            // Initialize menu if it doesn't exist
+            if (!menus[menuName]) {
+                menus[menuName] = [];
+            }
+            // Parse entry: Name;Icon;Command
+            // Use regex to split on semicolons, but preserve quoted strings
+            const regex = /(?:"[^"]*"|[^;]+)(?:;|$)/g;
+            const parts = [];
+            let match;
+            while ((match = regex.exec(value)) !== null) {
+                let part = match[0].replace(/;$/,'').trim();
+                // Remove quotes from command if present
+                if (part.startsWith('"') && part.endsWith('"')) {
+                    part = part.slice(1, -1);
+                }
+                parts.push(part);
+            }
+            if (parts.length >= 3) {
+                const entry = {
+                    name: parts[0],
+                    icon: parts[1],
+                    command: parts[2] // Keep as-is, quotes will be handled on save
+                };
+                menus[menuName].push(entry);
+            }
+        }
+        function updateUIFromConfig() {
+            // If current menu doesn't exist anymore, switch to Main
+            if (!menus[currentMenu]) {
+                currentMenu = 'Main';
+            }
+            // Re-render menus
+            renderMenuTabs();
+            renderMenuEntries();
+        }
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-slate-700', 'text-slate-300');
+            });
+            document.querySelector(`button[onclick="switchTab('${tabName}')"]`).classList.remove('bg-slate-700', 'text-slate-300');
+            document.querySelector(`button[onclick="switchTab('${tabName}')"]`).classList.add('bg-blue-600', 'text-white');
+            if (tabName === 'menus') {
+                renderMenuTabs();
+                renderMenuEntries();
+            }
+        }
+        function renderMenuTabs() {
+            const container = document.getElementById('menu-tabs');
+            container.innerHTML = '';
+            Object.keys(menus).forEach(menuName => {
+                const btn = document.createElement('button');
+                btn.textContent = menuName;
+                btn.className = `px-4 py-2 rounded-lg transition-colors ${menuName === currentMenu ? 'bg-blue-600 text-white' : 'bg-slate-700 hover:bg-slate-600 text-slate-300'}`;
+                btn.onclick = () => switchMenu(menuName);
+                container.appendChild(btn);
+            });
+        }
+        function switchMenu(menuName) {
+            currentMenu = menuName;
+            renderMenuTabs();
+            renderMenuEntries();
+            document.getElementById('delete-menu-btn').style.display = menuName === 'Main' ? 'none' : 'flex';
+        }
+        function renderMenuEntries() {
+            const container = document.getElementById('menu-entries');
+            container.innerHTML = '';
+            menus[currentMenu].forEach((entry, index) => {
+                const div = document.createElement('div');
+                div.className = 'bg-slate-700 p-4 rounded-lg';
+                div.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Name</label>
+                                <input type="text" value="${entry.name}" onchange="updateEntry(${index}, 'name', this.value)" class="w-full bg-slate-600 border border-slate-500 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Icon Path</label>
+                                <input type="text" value="${entry.icon}" onchange="updateEntry(${index}, 'icon', this.value)" class="w-full bg-slate-600 border border-slate-500 rounded-lg px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Command</label>
+                                <input type="text" value="${entry.command}" onchange="updateEntry(${index}, 'command', this.value)" class="w-full bg-slate-600 border border-slate-500 rounded-lg px-4 py-2">
+                            </div>
+                        </div>
+                        <button onclick="removeEntry(${index})" class="mt-8 bg-red-600 hover:bg-red-700 p-2 rounded-lg transition-colors">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        function updateEntry(index, field, value) {
+            menus[currentMenu][index][field] = value;
+        }
+        function removeEntry(index) {
+            menus[currentMenu].splice(index, 1);
+            renderMenuEntries();
+        }
+        function addMenuEntry() {
+            menus[currentMenu].push({ name: '', icon: '', command: '' });
+            renderMenuEntries();
+        }
+        function addMenu() {
+            const menuName = prompt('Enter new menu name:');
+            if (menuName && !menus[menuName]) {
+                menus[menuName] = [];
+                currentMenu = menuName;
+                renderMenuTabs();
+                renderMenuEntries();
+            }
+        }
+        function deleteCurrentMenu() {
+            if (currentMenu === 'Main') {
+                alert('Cannot delete the Main menu');
+                return;
+            }
+            if (confirm(`Delete menu "${currentMenu}"?`)) {
+                delete menus[currentMenu];
+                currentMenu = 'Main';
+                renderMenuTabs();
+                renderMenuEntries();
+            }
+        }
+        function getValue(id) {
+            const el = document.getElementById(id);
+            if (el.type === 'checkbox') return el.checked;
+            return el.value;
+        }
+        function downloadConfig() {
+            let ini = '# Flex Launcher v2.2 configuration file\n';
+            ini += '# For documentation: https://complexlogic.github.io/flex-launcher/configuration\n\n';
+            ini += '[General]\n';
+            ini += `DefaultMenu=${getValue('general-defaultMenu')}\n`;
+            ini += `VSync=${getValue('general-vsync')}\n`;
+            ini += getValue('general-fpsLimit') ? `FPSLimit=${getValue('general-fpsLimit')}\n` : '#FPSLimit=\n';
+            ini += getValue('general-applicationTimeout') ? `ApplicationTimeout=${getValue('general-applicationTimeout')}\n` : '#ApplicationTimeout=15\n';
+            ini += `OnLaunch=${getValue('general-onLaunch')}\n`;
+            ini += `WrapEntries=${getValue('general-wrapEntries')}\n`;
+            ini += `ResetOnBack=${getValue('general-resetOnBack')}\n`;
+            ini += `MouseSelect=${getValue('general-mouseSelect')}\n`;
+            ini += `InhibitOSScreensaver=${getValue('general-inhibitOSScreensaver')}\n`;
+            ini += '#StartupCmd=\n';
+            ini += '#QuitCmd=\n';
+            ini += '\n';
+            ini += '[Background]\n';
+            ini += `Mode=${getValue('background-mode')}\n`;
+            ini += `Color=${getValue('background-color')}\n`;
+            ini += getValue('background-image') ? `Image=${getValue('background-image')}\n` : '#Image=\n';
+            ini += getValue('background-slideshowDirectory') ? `SlideshowDirectory=${getValue('background-slideshowDirectory')}\n` : '#SlideshowDirectory=\n';
+            ini += `SlideshowImageDuration=${getValue('background-slideshowImageDuration')}\n`;
+            ini += `SlideshowTransitionTime=${getValue('background-slideshowTransitionTime')}\n`;
+            ini += '#ChromaKeyColor=#010101\n';
+            ini += `Overlay=${getValue('background-overlay')}\n`;
+            ini += `OverlayColor=#000000\n`;
+            ini += `OverlayOpacity=${getValue('background-overlayOpacity')}%\n`;
+            ini += '\n';
+            ini += '[Layout]\n';
+            ini += `MaxButtons=${getValue('layout-maxButtons')}\n`;
+            ini += `IconSize=${getValue('layout-iconSize')}\n`;
+            ini += `IconSpacing=${getValue('layout-iconSpacing')}%\n`;
+            ini += `VCenter=${getValue('layout-vCenter')}%\n`;
+            ini += '\n';
+            ini += '[Titles]\n';
+            ini += `Enabled=${getValue('titles-enabled')}\n`;
+            ini += `Font=${getValue('titles-font')}\n`;
+            ini += `FontSize=${getValue('titles-fontSize')}\n`;
+            ini += `Color=${getValue('titles-color')}\n`;
+            ini += `Opacity=${getValue('titles-opacity')}%\n`;
+            ini += `Shadows=${getValue('titles-shadows')}\n`;
+            ini += `ShadowColor=${getValue('titles-shadowColor')}\n`;
+            ini += `OversizeMode=${getValue('titles-oversizeMode')}\n`;
+            ini += `Padding=${getValue('titles-padding')}\n`;
+            ini += '\n';
+            ini += '[Highlight]\n';
+            ini += `Enabled=${getValue('highlight-enabled')}\n`;
+            ini += `FillColor=${getValue('highlight-fillColor')}\n`;
+            ini += `FillOpacity=${getValue('highlight-fillOpacity')}%\n`;
+            ini += `OutlineSize=${getValue('highlight-outlineSize')}\n`;
+            ini += `OutlineColor=${getValue('highlight-outlineColor')}\n`;
+            ini += `OutlineOpacity=${getValue('highlight-outlineOpacity')}%\n`;
+            ini += `CornerRadius=${getValue('highlight-cornerRadius')}\n`;
+            ini += `VPadding=${getValue('highlight-vPadding')}\n`;
+            ini += `HPadding=${getValue('highlight-hPadding')}\n`;
+            ini += '\n';
+            ini += '[Scroll Indicators]\n';
+            ini += `Enabled=${getValue('scroll-enabled')}\n`;
+            ini += `FillColor=${getValue('scroll-fillColor')}\n`;
+            ini += `OutlineSize=${getValue('scroll-outlineSize')}\n`;
+            ini += `OutlineColor=${getValue('scroll-outlineColor')}\n`;
+            ini += `Opacity=${getValue('scroll-opacity')}%\n`;
+            ini += '\n';
+            ini += '[Clock]\n';
+            ini += `Enabled=${getValue('clock-enabled')}\n`;
+            ini += `ShowDate=${getValue('clock-showDate')}\n`;
+            ini += `Alignment=${getValue('clock-alignment')}\n`;
+            ini += `Font=.\\assets\\fonts\\SourceSansPro-Regular.ttf\n`;
+            ini += `FontSize=${getValue('clock-fontSize')}\n`;
+            ini += `FontColor=${getValue('clock-fontColor')}\n`;
+            ini += `Shadows=false\n`;
+            ini += `ShadowColor=#000000\n`;
+            ini += `Margin=${getValue('clock-margin')}%\n`;
+            ini += `Opacity=100%\n`;
+            ini += `TimeFormat=Auto\n`;
+            ini += `DateFormat=Auto\n`;
+            ini += `IncludeWeekday=true\n`;
+            ini += '\n';
+            ini += '[Screensaver]\n';
+            ini += `Enabled=${getValue('screensaver-enabled')}\n`;
+            ini += `IdleTime=${getValue('screensaver-idleTime')}\n`;
+            ini += `Intensity=${getValue('screensaver-intensity')}%\n`;
+            ini += `PauseSlideshow=${getValue('screensaver-pauseSlideshow')}\n`;
+            ini += '\n';
+            ini += '[Hotkeys]\n';
+            ini += `# Esc to quit\n`;
+            ini += `Hotkey1=#1B;:quit\n`;
+            ini += '\n';
+            ini += '[Gamepad]\n';
+            ini += `Enabled=${getValue('gamepad-enabled')}\n`;
+            ini += `DeviceIndex=${getValue('gamepad-deviceIndex')}\n`;
+            ini += `#ControllerMappingsFile=\n`;
+            ini += `LStickX-=:left\n`;
+            ini += `LStickX+=:right\n`;
+            ini += `#LStickY-=\n`;
+            ini += `#LStickY+=\n`;
+            ini += `#RStickX-=\n`;
+            ini += `#RStickX+=\n`;
+            ini += `#RStickY-=\n`;
+            ini += `#RStickY+=\n`;
+            ini += `#LTrigger=\n`;
+            ini += `#RTrigger=\n`;
+            ini += `ButtonA=${getValue('gamepad-buttonA')}\n`;
+            ini += `ButtonB=${getValue('gamepad-buttonB')}\n`;
+            ini += `ButtonX=${getValue('gamepad-buttonX')}\n`;
+            ini += `ButtonY=${getValue('gamepad-buttonY')}\n`;
+            ini += `ButtonBack=${getValue('gamepad-buttonBack')}\n`;
+            ini += `ButtonGuide=${getValue('gamepad-buttonGuide')}\n`;
+            ini += `ButtonStart=${getValue('gamepad-buttonStart')}\n`;
+            ini += `ButtonLeftStick=${getValue('gamepad-buttonLeftStick')}\n`;
+            ini += `ButtonRightStick=${getValue('gamepad-buttonRightStick')}\n`;
+            ini += `ButtonLeftShoulder=${getValue('gamepad-buttonLeftShoulder')}\n`;
+            ini += `ButtonRightShoulder=${getValue('gamepad-buttonRightShoulder')}\n`;
+            ini += `ButtonDPadUp=${getValue('gamepad-buttonDPadUp')}\n`;
+            ini += `ButtonDPadDown=${getValue('gamepad-buttonDPadDown')}\n`;
+            ini += `ButtonDPadLeft=${getValue('gamepad-buttonDPadLeft')}\n`;
+            ini += `ButtonDPadRight=${getValue('gamepad-buttonDPadRight')}\n`;
+            ini += '\n';
+            ini += `# Menu configurations\n`;
+            Object.entries(menus).forEach(([menuName, entries]) => {
+                ini += `[${menuName}]\n`;
+                entries.forEach((entry, i) => {
+                    // Quote command if it contains spaces and isn't a special command
+                    let command = entry.command;
+                    if (command && !command.startsWith(':') && (command.includes(' ') || command.includes(';'))) {
+                        command = `"${command}"`;
+                    }
+                    ini += `Entry${i + 1}=${entry.name};${entry.icon};${command}\n`;
+                });
+                ini += '\n';
+            });
+            const blob = new Blob([ini], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'config.ini';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        // Sync color picker with text input
+        document.getElementById('background-color').addEventListener('input', (e) => {
+            document.getElementById('background-colorText').value = e.target.value;
+        });
+        document.getElementById('background-colorText').addEventListener('input', (e) => {
+            document.getElementById('background-color').value = e.target.value;
+        });
+        document.getElementById('clock-fontColor').addEventListener('input', (e) => {
+            document.getElementById('clock-fontColorText').value = e.target.value;
+        });
+        document.getElementById('clock-fontColorText').addEventListener('input', (e) => {
+            document.getElementById('clock-fontColor').value = e.target.value;
+        });
+        document.getElementById('titles-color').addEventListener('input', (e) => {
+            document.getElementById('titles-colorText').value = e.target.value;
+        });
+        document.getElementById('titles-colorText').addEventListener('input', (e) => {
+            document.getElementById('titles-color').value = e.target.value;
+        });
+        document.getElementById('titles-shadowColor').addEventListener('input', (e) => {
+            document.getElementById('titles-shadowColorText').value = e.target.value;
+        });
+        document.getElementById('titles-shadowColorText').addEventListener('input', (e) => {
+            document.getElementById('titles-shadowColor').value = e.target.value;
+        });
+        document.getElementById('highlight-fillColor').addEventListener('input', (e) => {
+            document.getElementById('highlight-fillColorText').value = e.target.value;
+        });
+        document.getElementById('highlight-fillColorText').addEventListener('input', (e) => {
+            document.getElementById('highlight-fillColor').value = e.target.value;
+        });
+        document.getElementById('highlight-outlineColor').addEventListener('input', (e) => {
+            document.getElementById('highlight-outlineColorText').value = e.target.value;
+        });
+        document.getElementById('highlight-outlineColorText').addEventListener('input', (e) => {
+            document.getElementById('highlight-outlineColor').value = e.target.value;
+        });
+        document.getElementById('scroll-fillColor').addEventListener('input', (e) => {
+            document.getElementById('scroll-fillColorText').value = e.target.value;
+        });
+        document.getElementById('scroll-fillColorText').addEventListener('input', (e) => {
+            document.getElementById('scroll-fillColor').value = e.target.value;
+        });
+        document.getElementById('scroll-outlineColor').addEventListener('input', (e) => {
+            document.getElementById('scroll-outlineColorText').value = e.target.value;
+        });
+        document.getElementById('scroll-outlineColorText').addEventListener('input', (e) => {
+            document.getElementById('scroll-outlineColor').value = e.target.value;
+        });
+        // Initialize first tab
+        switchTab('general');
+    </script>
+</body>
+</html>
