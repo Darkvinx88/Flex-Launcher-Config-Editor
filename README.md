@@ -5,8 +5,8 @@ Forget manual INI editing: this tool lets you import your `config.ini`, modify e
 
 🔥 **No installation required — just open the HTML file in your browser.**
 
----
 
+---
 <p align="center">
   <a href='https://ko-fi.com/W7W41RFDX2' target='_blank'>
     <img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' />
@@ -18,7 +18,8 @@ Forget manual INI editing: this tool lets you import your `config.ini`, modify e
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
 </p>
 
- Screenshots
+ <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/76dde0c6-4397-4afa-9ebb-43dacfce9e35" />
+ Screenshot
 
 ## ✨ Features
 
